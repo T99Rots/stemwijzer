@@ -1,11 +1,11 @@
 export default class extends HTMLElement {
   constructor() {
     super();
-    const shadowRoot = this._shadowRoot = this.attachShadow({mode: 'opened'});
+    const shadowRoot = this._shadowRoot = this.attachShadow({mode: 'open'});
     const html = this.constructor.html;
     const props = this.constructor.properties;
-    this.__renderScheduled = true;
-    const changedProps = {};
+    this.__renderScheduled = false;
+    let changedProps = {};
 
     if(Array.isArray(props)) {
 
@@ -23,38 +23,38 @@ export default class extends HTMLElement {
           }
         }, {})
       }
-
-      this.defineProperties(this, props.reduce((obj, prop) => ({
-        ...obj,
-        [prop]: {
+      let propertyListeners = {};
+      for(let property of props) {
+        propertyListeners[property] = {
           get: () => {
-            return this[`__${prop}`];
+            return this[`__${property}`];
           },
           set: value => {
-            changedProps[prop] = {
+            changedProps[property] = {
               newValue: value,
-              oldValue: changedProps[prop] || this[`__${prop}`] 
+              oldValue: (changedProps[property]&&changedProps[property].oldValue) || this[`__${property}`] 
             }
-            this[`__${prop}`] = value;
+            this[`__${property}`] = value;
             if(!this.__renderScheduled) {
               this.__renderScheduled = true;
               requestAnimationFrame(() => {
                 if(typeof this.render === 'function') {
-                  this.render(props.reduce((obj, prop) => {
-                    const changed = prop in changedProps;
-                    const propObj = {
-                      ...obj,
-                      element: elements[prop],
-                      changed
+                  const dataObj = {};
+                  for(let property of props) {
+                    const changed = property in changedProps;
+                    dataObj[property] = {
+                      changed,
+                      element: this.elements[property],
+                      value
                     }
                     if(changed) {
-                      return {
-                        ...propObj,
-                        ...changedProps[prop]
+                      dataObj[property] = {
+                        ...dataObj[property],
+                        ...changedProps[property]
                       }
                     }
-                    return propObj
-                  },{}));
+                  }
+                  this.render(dataObj);
                   changedProps = {};
                   this.__renderScheduled = false;
                 }
@@ -62,17 +62,16 @@ export default class extends HTMLElement {
             }
           }
         }
-      })), {});
+      }
+      Object.defineProperties(this,propertyListeners);
 
       const observer = new MutationObserver(mutationList => {
         for(let mutation of mutationList) {
           if(mutation.type == 'attributes'&&props.includes(mutation.attributeName)) {
+            console.log(mutation);
             this[mutation.attributeName] = mutation.newValue;
           }
         }
-        if(typeof this.render === 'function') {
-          this.template()
-        };
       })
       observer.observe(this,{
         attributes: true

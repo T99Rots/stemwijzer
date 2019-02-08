@@ -12,7 +12,7 @@ class StatementElem extends BaseElem {
   static get html() {
     /*html*/
     return `
-
+      <h1 data-id="title">Beep Beep Lettuce</h1>
     `
   }
 
@@ -26,3 +26,5 @@ class StatementElem extends BaseElem {
     
   }
 }
+
+customElements.define('statement-elem', StatementElem);
