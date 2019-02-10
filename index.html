@@ -9,40 +9,11 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="js/data.js"></script>
   <script src="http://stemwijzer.dvc-icta.nl/data.js"></script>
-  <script type="module" src="js/statement-elem.js"></script>
+  <script type="module" src="js/components/stemwijzer-app.js"></script>
 </head>
 
 <body>
-  <template id="stem-element">
-
-  </template>
-
-  <main>
-    <stem-elem>
-      <div id="progress-bar-container">
-        <div id="progress-bar"></div>
-      </div>
-      <div id="navigation">
-        <div id="back-button">
-          <img src="/img/baseline-arrow_back-24px.svg" alt="arrow">
-        </div>
-      </div>
-      <div id="statements">
-        <statement-elem>
-          <h1 id="statement-title">Hups flups, potato, potat, doggo</h1>
-          <p id="statement-body">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed, impedit maiores facere sapiente labore reiciendis aliquam architecto consequuntur porro totam dicta officiis, voluptatibus quaerat a doloremque esse. Et, quibusdam dolores.</p>
-        </statement-elem>
-        <div id="vote-buttons">
-          <button id="agree">Eens</button>
-          <button id="undecided">Geen van beide</button>
-          <button id="disagree">Oneens</button>    
-        </div>
-        <button id="skip-button">Sla deze vraag over</button>
-        <button id="show-opinions">Wat vinden de partijen?</button>
-      </div>
-    </stem-elem>
-  </main>
-  <statement-elem></statement-elem>
+  <stemwijzer-app></stemwijzer-app>
 </body>
 
 </html>
