@@ -6,22 +6,22 @@ export default class extends HTMLElement {
     const props = this.constructor.properties;
     this.__renderScheduled = false;
     let changedProps = {};
+    const elements = this._elems = {};
 
     if(Array.isArray(props)) {
 
       if(typeof html === 'string') {
         shadowRoot.innerHTML = html;
-        this.elements = props.reduce((obj, prop) => {
-          const elem = shadowRoot.querySelector(`[data-id=${prop}]`);
-          if(elem) {
-            return {
-              ...obj,
-              [prop]: elem
+        const dataElements = shadowRoot.querySelectorAll('[data-class]');
+        for(let elem of dataElements) {
+          elem.getAttribute('data-class').split(' ').forEach(attr => {
+            if(Array.isArray(elements[attr])) {
+              elements[attr].push(elem);
+            } else {
+              elements[attr] = [elem];
             }
-          } else {
-            return obj
-          }
-        }, {})
+          });
+        }
       }
       let propertyListeners = {};
       for(let property of props) {
@@ -32,7 +32,7 @@ export default class extends HTMLElement {
           set: value => {
             changedProps[property] = {
               newValue: value,
-              oldValue: (changedProps[property]&&changedProps[property].oldValue) || this[`__${property}`] 
+              oldValue: (changedProps[property]&&changedProps[property].oldValue) || this[`__${property}`] || null
             }
             this[`__${property}`] = value;
             if(!this.__renderScheduled) {
@@ -41,11 +41,12 @@ export default class extends HTMLElement {
                 if(typeof this.render === 'function') {
                   const dataObj = {};
                   for(let property of props) {
+                    console.log(property);
                     const changed = property in changedProps;
                     dataObj[property] = {
                       changed,
-                      element: this.elements[property],
-                      value
+                      elements: elements[property] || null,
+                      value: this[`__${property}`] || null
                     }
                     if(changed) {
                       dataObj[property] = {
@@ -54,10 +55,14 @@ export default class extends HTMLElement {
                       }
                     }
                   }
-                  this.render(dataObj);
+                  try {
+                    this.render(dataObj);
+                  } catch (err) {
+                    console.error(err);
+                  }
                   changedProps = {};
-                  this.__renderScheduled = false;
                 }
+                this.__renderScheduled = false;
               })
             }
           }
