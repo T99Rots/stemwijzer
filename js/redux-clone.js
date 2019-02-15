@@ -1,3 +1,11 @@
+const randomString = () => Math.random().toString(36).substring(7).split('').join('.');
+
+const ActionTypes = {
+  INIT: `@@redux/INIT${randomString()}`,
+  REPLACE: `@@redux/REPLACE${randomString()}`,
+  PROBE_UNKNOWN_ACTION: () => `@@redux/PROBE_UNKNOWN_ACTION${randomString()}`
+}
+
 export const createStore = (reducer, state) => {
 	if(typeof reducer !== 'function') {
 		throw new Error('Reducer must be a function');
@@ -8,6 +16,7 @@ export const createStore = (reducer, state) => {
 	let subscriberUpdateScheduled  = false;
 
 	const store = {
+    __state: state,
 		dispatch: (action) => {
 			if(typeof action !== 'object') {
 				throw new Error('Action must be a Object');
@@ -27,7 +36,7 @@ export const createStore = (reducer, state) => {
 			}
 		},
 		getState: () => {
-			return JSON.parse(JSON.stringify(state));
+			return state;
 		},
 		subscribe: (subscriber) => {
 			if(typeof subscriber === 'function') {
@@ -47,7 +56,9 @@ export const createStore = (reducer, state) => {
 			reducer = nextReducer;
 		}
 	}
-	store.dispatch();
+	store.dispatch({
+    type: ActionTypes.INIT
+  });
 
 	return store;
 }

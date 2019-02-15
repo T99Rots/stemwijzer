@@ -1,10 +1,12 @@
-import BaseElem from '../components/base-element.js';
+import { BaseElement } from '../components/base-element.js';
+import { store, connect } from '../store.js'
 // import './into-element.js';
 // import './statement-element.js';
 // import './parties-element.js';
 // import './results-element.js';
 
-class StemwijzerApp extends BaseElem {
+
+class StemwijzerApp extends connect(store)(BaseElement) {
   static get properties() {
     return [
       'title',

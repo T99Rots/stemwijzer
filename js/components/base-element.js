@@ -43,9 +43,9 @@ export class BaseElement extends HTMLElement {
             return this[`__${property}`];
           },
           set: value => {
-            changedProps[property] = {
+            this.__changedProps[property] = {
               newValue: value,
-              oldValue: (changedProps[property]&&changedProps[property].oldValue) || this[`__${property}`] || null
+              oldValue: (this.__changedProps[property]&&this.__changedProps[property].oldValue) || this[`__${property}`] || null
             }
             this[`__${property}`] = value;
             if(typeof this.shouldRender === 'function') {
@@ -102,16 +102,16 @@ export class BaseElement extends HTMLElement {
       const dataObj = {};
       for(let property of props) {
         console.log(property);
-        const changed = property in changedProps;
+        const changed = property in this.__changedProps;
         dataObj[property] = {
           changed,
-          elements: elements[property] || null,
+          elements: this.__elems[property] || null,
           value: this[`__${property}`] || null
         }
         if(changed) {
           dataObj[property] = {
             ...dataObj[property],
-            ...changedProps[property]
+            ...this.__changedProps[property]
           }
         }
       }
@@ -120,7 +120,7 @@ export class BaseElement extends HTMLElement {
       } catch (err) {
         console.error(err);
       }
-      changedProps = {};
+      this.__changedProps = {};
     }
     this.__renderScheduled = false;
   }

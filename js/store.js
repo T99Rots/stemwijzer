@@ -3,3 +3,5 @@ import { app } from './reducers/app.js';
 export {connect};
 
 export const store = createStore(app);
+
+console.log(store);
