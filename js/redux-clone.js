@@ -32,7 +32,13 @@ export const createStore = (reducer, state) => {
 		subscribe: (subscriber) => {
 			if(typeof subscriber === 'function') {
 				subscribers.push(subscriber);
-			}
+      }
+      return () => {
+        const index = subscribers.indexOf(subscriber);
+        if(!(index === -1)) {
+          subscribers.splice(index,1);
+        }
+      }
 		},
 		replaceReducer: (nextReducer) => {
 			if(typeof nextReducer !== 'function') {
@@ -62,4 +68,19 @@ export const combineReducers = (reducers) => {
 		}
 		return newState;
 	}
+}
+
+export const connect = (store) => (BaseElement) => class extends BaseElement {
+  connectedCallback() {
+    if(super.connectedCallback) {
+      super.connectedCallback();
+      this.__storeUnsubscribe = store.subscribe(() => this.stateChanged(store.getState()));
+    }
+  }
+  disconnectedCallback() {
+    this.__storeUnsubscribe();
+    if(super.disconnectedCallback) {
+      super.disconnectedCallback();
+    }
+  }
 }

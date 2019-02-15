@@ -1,4 +1,4 @@
-import BaseElem from './base-elem.js';
+import BaseElem from './base-element.js/index.js';
 
 class ProgressBar extends BaseElem {
   static get html() {
@@ -11,6 +11,6 @@ class ProgressBar extends BaseElem {
       'progress'
     ]
   }
-  render({progress}) 
+  render({progress}) {}
 
 }

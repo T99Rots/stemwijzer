@@ -1,4 +1,4 @@
-import BaseElem from './base-elem.js';
+import { BaseElem, bind } from './base-element.js';
 
 class StatementElem extends BaseElem {
   static get properties() {
@@ -17,13 +17,10 @@ class StatementElem extends BaseElem {
   }
 
   render({title, statement, opinions}) {
-    if(title.changed) {
-      title.element.innerText = title.value;
-    }
-    if(statement.changed) {
-      statement.element.innerText = statement.value;
-    }
-    
+    bind(
+      title,
+      statement
+    )
   }
 }
 
